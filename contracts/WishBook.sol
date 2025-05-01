@@ -30,6 +30,10 @@ contract WishBook is Ownable {
         );
         _;
     }
+    modifier validWishId(uint _id) {
+        require(_id < wishes.length, "Invalid wish ID");
+        _;
+    }
 
     function getNextId() public view returns (uint) {
         return nextId;
@@ -57,8 +61,7 @@ contract WishBook is Ownable {
         nextId++;
     }
 
-    function toggleLike(uint _id) public {
-        require(_id < wishes.length, "Invalid wish ID");
+    function toggleLike(uint _id) public validWishId(_id){
         bool liked;
 
         if (hasLiked[_id][msg.sender]) {
@@ -74,8 +77,7 @@ contract WishBook is Ownable {
         emit LikeToggled(msg.sender, _id, liked);
     }
 
-    function deleteWish(uint _id) public onlySenderOrOwner(_id){
-        require(_id < wishes.length, "Invalid wish ID");
+    function deleteWish(uint _id) public validWishId(_id) onlySenderOrOwner(_id){
         wishes[_id].isDeleted = true;
         emit WishDeleted(_id);
     }
